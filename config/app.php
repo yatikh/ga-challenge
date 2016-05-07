@@ -156,6 +156,11 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Twilio
+         */
+        App\Providers\TwilioServiceProvider::class,
+
     ],
 
     /*
