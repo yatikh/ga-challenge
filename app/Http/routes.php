@@ -11,6 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('pages.index');
-});
+Route::get('/', 'DefaultController@index');
+
+Route::get('countries', 'CountriesController@list');
+// Route::post('countries', 'CountriesController@keep');
