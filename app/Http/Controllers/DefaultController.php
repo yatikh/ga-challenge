@@ -13,8 +13,12 @@ class DefaultController extends Controller
             return redirect('countries');
         }
 
-        $country = Country::find(Session::get('country'));
+        $country = Country::with('phonenumbers')->find(Session::get('country'));
+        $phonenumbers = $country->phonenumbers()->get();
 
-        return view('pages.index', ['country' => $country]);
+        return view('pages.index', [
+            'country' => $country,
+            'phonenumbers' => $phonenumbers
+        ]);
     }
 }

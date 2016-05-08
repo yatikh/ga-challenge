@@ -12,4 +12,13 @@ class Country extends Model
      * @var bool
      */
     public $timestamps = false;
+
+
+    /**
+     * Phonenumbers registered in this country.
+     */
+    public function phonenumbers()
+    {
+        return $this->hasMany('App\Models\Phonenumber');
+    }
 }
