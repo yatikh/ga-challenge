@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="page-header">
-        <h1>Phone number for a country "{{ $country['name'] }}"</h1>
+        <h1>Phone number for a country {{ $country['name'] }}</h1>
     </div>
 
     @if ($phonenumbers->isEmpty())
