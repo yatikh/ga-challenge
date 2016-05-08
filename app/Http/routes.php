@@ -15,3 +15,6 @@ Route::get('/', 'DefaultController@index');
 
 Route::get('countries', 'CountriesController@list');
 Route::post('countries', 'CountriesController@keep');
+
+Route::post('twilio/buy', 'TwilioController@buy');
+Route::post('twilio/incoming', 'TwilioController@incoming');

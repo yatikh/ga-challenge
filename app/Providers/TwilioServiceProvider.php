@@ -17,7 +17,7 @@ class TwilioServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('Twilio', function ($app) {
+        $this->app->bind(Services_Twilio::class, function ($app) {
             return new Services_Twilio(
                 $app['config']['twilio']['account_sid'],
                 $app['config']['twilio']['auth_token']
@@ -32,6 +32,6 @@ class TwilioServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['Twilio'];
+        return [Services_Twilio::class,];
     }
 }
