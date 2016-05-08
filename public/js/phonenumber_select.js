@@ -1,7 +1,7 @@
 var $form = $('.j-purchasing'),
     $select = $form.find('select');
 
-if (!$select.children().length) {
+if ($select.length && !$select.children().length) {
     $.getJSON(
         'twilio/phonenumbers/' + $form.data('country'),
         [],
