@@ -6,8 +6,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CountriesTest extends TestCase
 {
-    use DatabaseMigrations;
-
     /**
      * Show page with list of countries while country wasn't selected.
      */
