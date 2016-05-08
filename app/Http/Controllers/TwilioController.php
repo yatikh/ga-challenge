@@ -11,6 +11,7 @@ use Session;
 use Services_Twilio;
 use App\Models\Phonenumber;
 use App\Models\Country;
+use App\Models\Call;
 
 class TwilioController extends Controller
 {
@@ -91,14 +92,31 @@ class TwilioController extends Controller
         $phonenumber = new Phonenumber;
         $phonenumber->number = $bouhtNumber->phone_number;
         // $phonenumber->number = $request->get('phonenumber');
-        $phonenumber->setCountry($country);
+        $phonenumber->country()->associate($country);
         $phonenumber->save();
 
         return back();
     }
 
-    public function voiceIncoming()
+    /**
+     * Response on incomming voice call from Twilio.
+     */
+    public function voiceIncoming(Request $request, Services_Twilio_Twiml $twiml)
     {
-        # code...
+        // tracking call
+        $phonenumber = Phonenumber::where(['number' => $request->get('To')])->first();
+
+        $call = new Call;
+        $call->phonenumber()->associate($phonenumber);
+        $call->sid = $request->get('CallSid');
+        $call->from_number = $request->get('From');
+        $call->from_name = $request->get('CallerName');
+        $call->from_country = $request->get('FromCountry');
+        $call->save();
+
+        // answer to call
+        $twiml->say('Hello, this is an answer for the call.', ['voice' => 'alice']);
+
+        return response($twiml, 200)->header('Content-Type', 'application/xml');
     }
 }

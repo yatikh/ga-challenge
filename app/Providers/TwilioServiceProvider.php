@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Services_Twilio;
 use Illuminate\Support\ServiceProvider;
+use Services_Twilio;
+use Services_Twilio_Twiml;
 
 class TwilioServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,10 @@ class TwilioServiceProvider extends ServiceProvider
                 $app['config']['twilio']['auth_token']
             );
         });
+
+        $this->app->bind(Services_Twilio_Twiml::class, function ($app) {
+            return new Services_Twilio_Twiml();
+        });
     }
 
     /**
@@ -32,6 +37,6 @@ class TwilioServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [Services_Twilio::class,];
+        return [Services_Twilio::class, Services_Twilio_Twiml::class,];
     }
 }

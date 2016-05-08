@@ -15,8 +15,8 @@ class Phonenumber extends Model
         return $this->belongsTo('App\Models\Country');
     }
 
-    public function setCountry(Country $country)
+    public function calls()
     {
-        $this->country_id = $country->id;
+        return $this->hasMany('App\Models\Call');
     }
 }
