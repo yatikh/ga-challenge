@@ -22,11 +22,16 @@
             </div>
         @endif
 
-        <form action="twilio/buy" method="post">
+        <form class="j-purchasing form-horizontal" action="twilio/buy" method="post" data-country="{{ $country->iso_code }}">
             {{ csrf_field() }}
 
-            <input type="hidden" name="country_code" value="{{ $country->iso_code }}">
             <input type="hidden" name="country_id" value="{{ $country->id }}">
+
+            <label>
+                List of available phonenumbers
+                <select class="form-control" name="phonenumber"></select>
+            </label>
+
             <button type="submit" class="btn btn-primary">Buy number</button>
         </form>
     @else

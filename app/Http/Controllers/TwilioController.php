@@ -28,6 +28,33 @@ class TwilioController extends Controller
     }
 
     /**
+     * List of available phone numbers for purchasing.
+     * @param string Iso code of a country.
+     * @return JSON
+     */
+    public function phonenumbers($countryCode)
+    {
+        // search a number
+        try {
+            $numbers = $this->twilio->account->available_phone_numbers->getList(
+                $countryCode,
+                'Local',
+                ['VoiceEnabled' => 'true']
+            );
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+
+        $items = [];
+
+        foreach ($numbers->available_phone_numbers as $number) {
+            $items[] = $number->phone_number;
+        }
+
+        return ['items' => $items];
+    }
+
+    /**
      * Buy a phonenumber in particular country.
      * @param Request Current request.
      */
@@ -35,40 +62,31 @@ class TwilioController extends Controller
     {
         // validate request
         $this->validate($request, [
-            'country_code' => 'required|max:2',
+            'phonenumber' => 'required',
             'country_id' => 'required'
         ]);
 
         // get country object
         $country = Country::find($request->get('country_id'));
 
-        // search a number
-        $numbers = $this->twilio->account->available_phone_numbers->getList(
-            $request->get('country_code'),
-            'Local',
-            [
-                'VoiceEnabled' => 'true',
-            ]
-        );
-
-        // pick the first
-        $number = current($numbers->available_phone_numbers);
-
-        // $stubbedNumber = '+34518880342';
-
         // buy fouded number
-        $bouhtNumber = $this->twilio->account->incoming_phone_numbers->create([
-            "VoiceUrl" => "http://demo.twilio.com/docs/voice.xml",
-            "PhoneNumber" => $number->phone_number
-            // "PhoneNumber" => $stubbedNumber
-        ]);
+        // $bouhtNumber = $this->twilio->account->incoming_phone_numbers->create([
+        //     "VoiceUrl" => "http://demo.twilio.com/docs/voice.xml",
+        //     "PhoneNumber" => $request->get('phonenumber')
+        // ]);
 
         // store to DB
         $phonenumber = new Phonenumber;
-        $phonenumber->number = $bouhtNumber->phone_number;
+        // $phonenumber->number = $bouhtNumber->phone_number;
+        $phonenumber->number = $request->get('phonenumber');
         $phonenumber->setCountry($country);
         $phonenumber->save();
 
         return back();
+    }
+
+    public function voiceIncoming()
+    {
+        # code...
     }
 }
