@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Session;
+use App\Models\Country;
 
 class DefaultController extends Controller
 {
@@ -12,6 +13,8 @@ class DefaultController extends Controller
             return redirect('countries');
         }
 
-        return view('pages.index');
+        $country = Country::find(Session::get('country'));
+
+        return view('pages.index', ['country' => $country]);
     }
 }

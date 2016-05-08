@@ -2,10 +2,8 @@
 
 @section('content')
 
-    <h1>It works</h1>
-
-    <?php
-        // dd(config('twilio'));
-     ?>
+    <div class="page-header">
+        <h1>Phone number for a country "{{ $country->name }}"</h1>
+    </div>
 
 @endsection

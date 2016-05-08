@@ -2,32 +2,29 @@
 
 @section('content')
 
-    <h1>Please select your country</h1>
+    <div class="page-header">
+        <h1>Please select your country <small>choose one</small></h1>
+    </div>
 
-    <form method="POST">
-        {{ csrf_field() }}
-
-        <div class="row">
-            @foreach ($countries as $countriesChunk)
-                <div class="col-xs-6 col-sm-3">
+    <div class="row">
+        @foreach ($countries as $countriesChunk)
+            <div class="col-xs-6 col-sm-3">
+                <div class="list-group">
                     @foreach ($countriesChunk as $country)
-                            {{-- <div class="list-group">
-
-                            </div> --}}
-
-
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="countries" id="country-{{ $country->id }}" value="{{ $country->id }}">
-                                <span class="flag-icon flag-icon-{{ strtolower($country->iso_code) }}"></span>
-                                {{ $country->name }}
-                            </label>
+                        <div class="list-group-item">
+                            <form method="post">
+                                {{ csrf_field() }}
+                                <input type="hidden" name="country" value="{{ $country->id }}">
+                                <button type="submit" class="btn btn-link">
+                                    <span class="flag-icon flag-icon-{{ strtolower($country->iso_code) }}"></span>
+                                    {{ $country->name }}
+                                </button>
+                            </form>
                         </div>
                     @endforeach
                 </div>
-            @endforeach
-        </div>
-    </form>
-
+            </div>
+        @endforeach
+    </div>
 
 @endsection

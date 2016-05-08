@@ -14,4 +14,4 @@
 Route::get('/', 'DefaultController@index');
 
 Route::get('countries', 'CountriesController@list');
-// Route::post('countries', 'CountriesController@keep');
+Route::post('countries', 'CountriesController@keep');
