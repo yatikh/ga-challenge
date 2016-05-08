@@ -4,12 +4,11 @@ Installation
 
 1. composer install
 2. php artisan migrate
-3. php artisan db:seed // fill countries table
-4. bower install
-5. gulp
+3. bower install
+4. gulp
 
 
 Testing
 
-Using command below before testing:
+Using next command before testing:
 php artisan migrate:refresh
