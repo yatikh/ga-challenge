@@ -8,4 +8,4 @@
         // dd(config('twilio'));
      ?>
 
-@stop
+@endsection
