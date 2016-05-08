@@ -3,12 +3,12 @@
 @section('content')
 
     <div class="page-header">
-        <h1>Phone number for a country "{{ $country->name }}"</h1>
+        <h1>Phone number for a country "{{ $country['name'] }}"</h1>
     </div>
 
     @if ($phonenumbers->isEmpty())
         <div class="alert alert-info" role="alert">
-            Unfortunatelly we don't have any numbers in {{ $country->name }} yet.
+            Unfortunatelly we don't have any numbers in {{ $country['name'] }} yet.
             But we can buy some.
         </div>
 
@@ -22,10 +22,8 @@
             </div>
         @endif
 
-        <form class="j-purchasing form-horizontal" action="twilio/buy" method="post" data-country="{{ $country->iso_code }}">
+        <form class="j-purchasing form-horizontal" action="twilio/buy" method="post" data-country="{{ $country['iso'] }}">
             {{ csrf_field() }}
-
-            <input type="hidden" name="country_id" value="{{ $country->id }}">
 
             <label>
                 List of available phonenumbers

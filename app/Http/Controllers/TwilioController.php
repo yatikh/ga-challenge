@@ -9,8 +9,9 @@ use App\Http\Requests;
 use App;
 use Session;
 use Services_Twilio;
+use Services_Twilio_Twiml;
+use Pricing_Services_Twilio;
 use App\Models\Phonenumber;
-use App\Models\Country;
 use App\Models\Call;
 
 class TwilioController extends Controller
@@ -30,6 +31,32 @@ class TwilioController extends Controller
         $this->twilio = $twilio;
     }
 
+    public function countries(Pricing_Services_Twilio $twilio, MessageBag $messageBag)
+    {
+        // obviously need to paginate results, but gonna stop with that
+        try {
+            $countries = $twilio->phoneNumberCountries->getPage(0, 100)->getItems();
+        } catch (\Exception $e) {
+            $messageBag->add('Twilio REST', $e->getMessage());
+            return back()->withErrors($messageBag);
+        }
+
+        $result = [];
+
+        foreach ($countries as $country) {
+            $result[] = [
+                'name' => $country->country,
+                'iso' => $country->iso_country
+            ];
+        }
+
+        // split for 4 column layout
+        $chunkSize = ceil(count($result) / 4);
+        $splitedCountries = array_chunk($result, $chunkSize);
+
+        return view('pages.countries', ['countries' => $splitedCountries]);
+    }
+
     /**
      * List of available phone numbers for purchasing.
      *
@@ -38,7 +65,7 @@ class TwilioController extends Controller
      */
     public function phonenumbers($countryCode)
     {
-        // test correct number
+        // debugging purchasing correct number
         // return ['items' => ['+15005550006']];
 
         // search a number
@@ -71,7 +98,6 @@ class TwilioController extends Controller
         // validate request
         $this->validate($request, [
             'phonenumber' => 'required',
-            'country_id' => 'required'
         ]);
 
         // buy fouded number
@@ -85,14 +111,14 @@ class TwilioController extends Controller
             return back()->withErrors($messageBag);
         }
 
-        // get country object
-        $country = Country::find($request->get('country_id'));
+        // get country from session
+        $country = Session::get('country');
 
         // store to DB
         $phonenumber = new Phonenumber;
         $phonenumber->number = $bouhtNumber->phone_number;
         // $phonenumber->number = $request->get('phonenumber');
-        $phonenumber->country()->associate($country);
+        $phonenumber->country_iso = $country['iso'];
         $phonenumber->save();
 
         return back();

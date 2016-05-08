@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use Session;
-use App\Models\Country;
+use App\Models\Phonenumber;
 
 class DefaultController extends Controller
 {
     public function index()
     {
         if (!Session::has('country')) {
-            return redirect('countries');
+            return redirect('twilio/countries');
         }
 
-        $country = Country::with('phonenumbers')->find(Session::get('country'));
-        $phonenumbers = $country->phonenumbers()->get();
+        $country = Session::get('country');
+
+        $phonenumbers = Phonenumber::where([
+            'country_iso' => $country['iso']
+        ])->get();
 
         return view('pages.index', [
             'country' => $country,

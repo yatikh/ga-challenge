@@ -13,9 +13,9 @@
 
 Route::get('/', 'DefaultController@index');
 
-Route::get('countries', 'CountriesController@list');
 Route::post('countries', 'CountriesController@keep');
 
+Route::get('twilio/countries', 'TwilioController@countries');
 Route::get('twilio/phonenumbers/{countryCode}', 'TwilioController@phonenumbers');
 Route::post('twilio/buy', 'TwilioController@buy');
 Route::post('twilio/voice/incoming', 'TwilioController@voiceIncoming');

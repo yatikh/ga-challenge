@@ -16,7 +16,7 @@ class CreatePhonenumbersTable extends Migration
             $table->increments('id');
             $table->timestamps();
             $table->string('number');
-            $table->integer('country_id')->unsigned()->index();
+            $table->string('country_iso', 2);
         });
     }
 
