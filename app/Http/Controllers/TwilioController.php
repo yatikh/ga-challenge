@@ -103,8 +103,9 @@ class TwilioController extends Controller
         // buy fouded number
         try {
             $bouhtNumber = $this->twilio->account->incoming_phone_numbers->create([
-                "VoiceUrl" => "http://demo.twilio.com/docs/voice.xml",
-                "PhoneNumber" => $request->get('phonenumber')
+                'PhoneNumber' => $request->get('phonenumber'),
+                'VoiceUrl' => 'https://demo.twilio.com/welcome/voice/',
+                'SmsUrl' => 'https://demo.twilio.com/welcome/sms/reply/',
             ]);
         } catch (\Exception $e) {
             $messageBag->add('Twilio REST', $e->getMessage());
