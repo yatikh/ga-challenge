@@ -3,9 +3,13 @@
 Installation
 
 1. composer install
-2. php artisan migrate
-3. bower install
-4. gulp
+2. php -r "copy('.env.example', '.env');"
+3. php artisan key:generate
+4. Add twilio settings to .env (or app/twilio.php)
+5. php artisan migrate
+6. bower install
+7. npm install
+8. gulp
 
 
 Testing
