@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
-
 use App\Http\Requests;
 use App;
 use Session;
@@ -104,7 +103,7 @@ class TwilioController extends Controller
         $phonenumber = new Phonenumber;
         $phonenumber->number = $bouhtNumber->phone_number;
         // $phonenumber->number = $request->get('phonenumber');
-        $phonenumber->country_iso = $country['iso'];
+        $phonenumber->countryIso = $country['iso'];
         $phonenumber->save();
 
         return back();
@@ -121,9 +120,9 @@ class TwilioController extends Controller
         $call = new Call;
         $call->phonenumber()->associate($phonenumber);
         $call->sid = $request->get('CallSid');
-        $call->from_number = $request->get('From');
-        $call->from_name = $request->get('CallerName');
-        $call->from_country = $request->get('FromCountry');
+        $call->fromNumber = $request->get('From');
+        $call->fromName = $request->get('CallerName');
+        $call->fromCountry = $request->get('FromCountry');
         $call->save();
 
         // answer to call
