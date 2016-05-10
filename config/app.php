@@ -124,6 +124,11 @@ return [
     'providers' => [
 
         /*
+         * Twilio
+         */
+        App\Providers\TwilioServiceProvider::class,
+
+        /*
          * Laravel Framework Service Providers...
          */
         Illuminate\Auth\AuthServiceProvider::class,
@@ -155,11 +160,6 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
-        /*
-         * Twilio
-         */
-        App\Providers\TwilioServiceProvider::class,
 
     ],
 

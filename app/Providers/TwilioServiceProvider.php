@@ -39,8 +39,6 @@ class TwilioServiceProvider extends ServiceProvider
                 $app['config']['twilio']['auth_token']
             );
         });
-
-
     }
 
     /**
