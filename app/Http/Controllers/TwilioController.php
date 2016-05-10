@@ -16,21 +16,6 @@ use App\Models\Call;
 
 class TwilioController extends Controller
 {
-    /**
-     * Twilio SDK client.
-     */
-    protected $twilio;
-
-    /**
-     * Resolve our service container dependency.
-     *
-     * @param Services_Twilio Twilio client.
-     */
-    public function __construct(Services_Twilio $twilio)
-    {
-        $this->twilio = $twilio;
-    }
-
     public function countries(Pricing_Services_Twilio $twilio, MessageBag $messageBag)
     {
         // obviously need to paginate results, but gonna stop with that
@@ -63,14 +48,14 @@ class TwilioController extends Controller
      * @param string Iso code of a country.
      * @return JSON
      */
-    public function phonenumbers($countryCode)
+    public function phonenumbers(Services_Twilio $twilio, $countryCode)
     {
         // debugging purchasing correct number
         // return ['items' => ['+15005550006']];
 
         // search a number
         try {
-            $numbers = $this->twilio->account->available_phone_numbers->getList(
+            $numbers = $twilio->account->available_phone_numbers->getList(
                 $countryCode,
                 'Local',
                 ['VoiceEnabled' => 'true']
@@ -93,7 +78,7 @@ class TwilioController extends Controller
      *
      * @param Request Current request.
      */
-    public function buy(Request $request, MessageBag $messageBag)
+    public function buy(Request $request, Services_Twilio $twilio, MessageBag $messageBag)
     {
         // validate request
         $this->validate($request, [
@@ -102,7 +87,7 @@ class TwilioController extends Controller
 
         // buy fouded number
         try {
-            $bouhtNumber = $this->twilio->account->incoming_phone_numbers->create([
+            $bouhtNumber = $twilio->account->incoming_phone_numbers->create([
                 'PhoneNumber' => $request->get('phonenumber'),
                 'VoiceUrl' => 'https://demo.twilio.com/welcome/voice/',
                 'SmsUrl' => 'https://demo.twilio.com/welcome/sms/reply/',
