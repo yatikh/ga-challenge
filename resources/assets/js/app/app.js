@@ -14,7 +14,7 @@ gaChallengeApp.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider.
         when('/', {
-            templateUrl: 'views/partials/country-detail.html',
+            templateUrl: 'views/partials/main.html',
             controller: 'CountryDetailController'
         }).
         when('/countries', {
@@ -22,7 +22,7 @@ gaChallengeApp.config(['$routeProvider',
             controller: 'CountryListController'
         }).
         otherwise({
-            redirectTo: '/countries'
+            redirectTo: '/'
         });
 }]);
 
