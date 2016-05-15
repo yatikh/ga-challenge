@@ -13,10 +13,12 @@
 
 Route::get('/', 'DefaultController@index');
 
-Route::post('countries', 'CountriesController@keep');
+Route::get('api/countries/current', 'Api/CountriesController@current');
+Route::get('api/countries', 'Api/CountriesController@list');
+Route::post('api/countries', 'Api/CountriesController@keep');
 
-Route::get('twilio/countries', 'TwilioController@countries');
-Route::get('twilio/phonenumbers/{countryCode}', 'TwilioController@phonenumbers');
-Route::post('twilio/buy', 'TwilioController@buy');
-Route::post('twilio/voice/incoming', 'TwilioController@voiceIncoming');
-// Route::post('twilio/sms/incoming', 'TwilioController@smsIncoming');
+Route::get('api/phonenumbers/{countryCode}', 'Api/PhonenumbersController@list');
+Route::get('api/phonenumbers/{countryCode}/current', 'Api/PhonenumbersController@current');
+Route::post('api/phonenumbers/purchasing', 'Api/PhonenumbersController@purchasing');
+
+Route::post('api/calls/voice/incoming', 'Api/CallsController@voiceIncoming');
