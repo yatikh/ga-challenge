@@ -30,7 +30,7 @@ class CountriesController extends Controller
     {
         // obviously need to paginate results, but gonna stop with that
         try {
-            $countries = $twilio->phoneNumberCountries->getPage(0, 100)->getItems();
+            $countries = $twilio->phoneNumberCountries;
         } catch (\Exception $e) {
             return response()->json(['errors' => [$e->getMessage()]], 400);
         }
@@ -66,13 +66,11 @@ class CountriesController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        $key = 'country';
-
-        Session::put($key, [
+        Session::put('country', [
             'name' => $request->get('name'),
             'iso' => $request->get('iso')
         ]);
 
-        return response()->json(['key' => $key], 201);
+        return response()->json(['key' => $request->get('iso')], 201);
     }
 }
