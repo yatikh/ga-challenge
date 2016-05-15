@@ -2,23 +2,23 @@
     <h1>Please select your country <small>choose one</small></h1>
 </div>
 
+<div class="alert alert-danger" ng-if="errors">
+    <ul>
+        <li ng-repeat="error in errors">{{ error }}</li>
+    </ul>
+</div>
+
 <div class="row">
-    {{ countries.forEach(function (column) { }}
-        <div class="col-xs-6 col-sm-3">
-            <div class="list-group">
-                {{ column.forEach(function (country) { }}
-                    <div class="list-group-item">
-                        <form action="/countries" method="post">
-                            <input type="hidden" name="country_iso" value="{{ $country['iso'] }}">
-                            <input type="hidden" name="country_name" value="{{ $country['name'] }}">
-                            <button type="submit" class="btn btn-link">
-                                <span class="flag-icon flag-icon-{{ strtolower($country['iso']) }}"></span>
-                                {{ $country['name'] }}
-                            </button>
-                        </form>
-                    </div>
-                {{ }); }}
+    <div class="col-xs-6 col-sm-3" ng-repeat="column in list">
+        <div class="list-group">
+            <div class="list-group-item" ng-repeat="country in column">
+                <form ng-submit="submit()" ng-controller="CountryKeepController">
+                    <button type="submit" class="btn btn-link">
+                        <span class="flag-icon flag-icon-{{ country.iso.toLowerCase() }}"></span>
+                        {{ country.name }}
+                    </button>
+                </form>
             </div>
         </div>
-    {{ }); }}
+    </div>
 </div>
