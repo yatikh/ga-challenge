@@ -13,7 +13,7 @@ class CountriesController extends Controller
     /**
      * Getting current country from session.
      */
-    public function currentCountry()
+    public function current()
     {
         if (!Session::has('country')) {
             return response()->json(['errors' => ['No stored country.']], 404);
@@ -25,7 +25,7 @@ class CountriesController extends Controller
     /**
      * Getting list of countries where user can buy a number.
      */
-    public function countries(Pricing_Services_Twilio $twilio)
+    public function list(Pricing_Services_Twilio $twilio)
     {
         // obviously need to paginate results, but gonna stop with that
         try {
@@ -53,7 +53,7 @@ class CountriesController extends Controller
     /**
      * Store country data to session.
      */
-    public function keepCountry(Request $request)
+    public function keep(Request $request)
     {
         // validate request
         $validator = Validator::make($request->all(), [

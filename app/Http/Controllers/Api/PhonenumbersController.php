@@ -14,10 +14,10 @@ class PhonenumbersController extends Controller
     /**
      * Getting phonenumber for country.
      */
-    public function phonenumber($countryIso)
+    public function current($countryCode)
     {
         $phonenumber = Phonenumber::where([
-            'country_iso' => $countryIso
+            'country_iso' => $countryCode
         ])->first();
 
         return response()->json(['phonenumber' => $phonenumber->number]);
@@ -29,7 +29,7 @@ class PhonenumbersController extends Controller
      * @param string Iso code of a country.
      * @return JSON
      */
-    public function phonenumbers(Services_Twilio $twilio, $countryCode)
+    public function list(Services_Twilio $twilio, $countryCode)
     {
         // debugging purchasing correct number
         // return ['items' => ['+15005550006']];
