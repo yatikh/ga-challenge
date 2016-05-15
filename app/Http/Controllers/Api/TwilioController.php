@@ -3,26 +3,52 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\MessageBag;
 use App\Http\Requests;
 use App;
 use Session;
+use Validator;
 use Services_Twilio;
 use Services_Twilio_Twiml;
 use Pricing_Services_Twilio;
-use App\Models\Phonenumber;
 use App\Models\Call;
+use App\Models\Phonenumber;
 
 class TwilioController extends Controller
 {
-    public function countries(Pricing_Services_Twilio $twilio, MessageBag $messageBag)
+    /**
+     * Getting current country from session.
+     */
+    public function currentCountry()
+    {
+        if (!Session::has('country')) {
+            return response()->json(['errors' => ['No stored country.']], 404);
+        }
+
+        return response()->json(['country' => Session::get('country')]);
+    }
+
+    /**
+     * Getting phonenumber for country.
+     */
+    public function phonenumber($countryIso)
+    {
+        $phonenumber = Phonenumber::where([
+            'country_iso' => $countryIso
+        ])->first();
+
+        return response()->json(['phonenumber' => $phonenumber->number]);
+    }
+
+    /**
+     * Getting list of countries where user can buy a number.
+     */
+    public function countries(Pricing_Services_Twilio $twilio)
     {
         // obviously need to paginate results, but gonna stop with that
         try {
             $countries = $twilio->phoneNumberCountries->getPage(0, 100)->getItems();
         } catch (\Exception $e) {
-            $messageBag->add('Twilio REST', $e->getMessage());
-            return back()->withErrors($messageBag);
+            return response()->json(['errors' => [$e->getMessage()]], 400);
         }
 
         $result = [];
@@ -38,7 +64,32 @@ class TwilioController extends Controller
         $chunkSize = ceil(count($result) / 4);
         $splitedCountries = array_chunk($result, $chunkSize);
 
-        return view('pages.countries', ['countries' => $splitedCountries]);
+        return response()->json(['items' => $splitedCountries]);
+    }
+
+    /**
+     * Store country data to session.
+     */
+    public function keepCountry(Request $request)
+    {
+        // validate request
+        $validator = Validator::make($request->all(), [
+            'country_iso' => 'required',
+            'country_name' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $key = 'country';
+
+        Session::put($key, [
+            'name' => $request->get('country_name'),
+            'iso' => $request->get('country_iso')
+        ]);
+
+        return reponse()->json(['key' => $key], 201);
     }
 
     /**
@@ -60,7 +111,7 @@ class TwilioController extends Controller
                 ['VoiceEnabled' => 'true']
             );
         } catch (\Exception $e) {
-            return ['error' => $e->getMessage()];
+            return response()->json(['errors' => [$e->getMessage()]], 400);
         }
 
         $items = [];
@@ -69,7 +120,7 @@ class TwilioController extends Controller
             $items[] = $number->phone_number;
         }
 
-        return ['items' => $items];
+        return response()->json(['items' => $items]);
     }
 
     /**
@@ -77,23 +128,26 @@ class TwilioController extends Controller
      *
      * @param Request Current request.
      */
-    public function buy(Request $request, Services_Twilio $twilio, MessageBag $messageBag)
+    public function buy(Request $request, Services_Twilio $twilio)
     {
         // validate request
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'phonenumber' => 'required',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
         // buy fouded number
         try {
-            $bouhtNumber = $twilio->account->incoming_phone_numbers->create([
+            $boughtNumber = $twilio->account->incoming_phone_numbers->create([
                 'PhoneNumber' => $request->get('phonenumber'),
                 'VoiceUrl' => 'https://demo.twilio.com/welcome/voice/',
                 'SmsUrl' => 'https://demo.twilio.com/welcome/sms/reply/',
             ]);
         } catch (\Exception $e) {
-            $messageBag->add('Twilio REST', $e->getMessage());
-            return back()->withErrors($messageBag);
+            return response()->json(['errors' => [$e->getMessage()]], 400);
         }
 
         // get country from session
@@ -101,12 +155,11 @@ class TwilioController extends Controller
 
         // store to DB
         $phonenumber = new Phonenumber;
-        $phonenumber->number = $bouhtNumber->phone_number;
-        // $phonenumber->number = $request->get('phonenumber');
+        $phonenumber->number = $boughtNumber->phone_number;
         $phonenumber->countryIso = $country['iso'];
         $phonenumber->save();
 
-        return back();
+        return response()->json(['number' => $boughtNumber->phone_number], 201);
     }
 
     /**
