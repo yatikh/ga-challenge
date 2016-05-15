@@ -4,70 +4,82 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
+use Mockery as M;
+
 class CountriesTest extends TestCase
 {
-    /**
-     * Show page with list of countries while country wasn't selected.
-     */
-    public function testShowCountriesList()
+    public function tearDown()
     {
-        $this->visit('/')
-            ->see('Please select your country');
+        parent::tearDown();
+
+        M::close();
     }
 
     /**
-     * Send the form with country data.
-     * Store to session. Redirect to main page.
+     * Get countries list.
      */
-    public function testSelectCountry()
+    public function testShouldSeeCountryList()
     {
-        $country = [
-            'name' => 'Russia',
-            'iso' => 'RU'
+        $twilio = M::mock(Pricing_Services_Twilio::class);
+
+        $countryFinland = new stdClass;
+        $countryFinland->country = 'Finland';
+        $countryFinland->iso_country = 'FI';
+
+        $countryFrance = new stdClass;
+        $countryFrance->country = 'France';
+        $countryFrance->iso_country = 'FR';
+
+        $twilio->phoneNumberCountries = [
+            $countryFinland, $countryFrance
         ];
 
-        $response = $this->call('POST', '/countries', [
-            'country_iso' => $country['iso'],
-            'country_name' => $country['name']
-        ]);
+        App::instance(Pricing_Services_Twilio::class, $twilio);
 
-        $this->assertEquals(302, $response->status());
+        $this->get('/api/countries')
+            ->seeJsonEquals([
+                [
+                    [
+                        'name' => 'Finland',
+                        'iso' => 'FI'
+                    ],
+                ],
+                [
+                    [
+                        'name' => 'France',
+                        'iso' => 'FR'
+                    ]
+                ]
+            ]);
+    }
+
+    public function testShouldKeepCountryInSession()
+    {
+        $country = [
+            'name' => 'France',
+            'iso' => 'FR'
+        ];
+
+        $this->post('/api/countries', $country)
+            ->seeJsonEquals([
+                'key' => 'FR'
+            ]);
+
         $this->assertSessionHas('country', $country);
-        $this->assertRedirectedTo('/');
     }
 
     /**
-     * Showing buy number form and country name where
-     * country was selected.
-     *
-     * @dataProvider countryProvider
+     * @depends testShouldKeepCountryInSession
      */
-    public function testShowPurchasingForm($name, $iso)
+    public function testShouldRetrieveCurrentCountryFromSession()
     {
         $country = [
-            'name' => $name,
-            'iso' => $iso
+            'name' => 'France',
+            'iso' => 'FR'
         ];
 
         $this->withSession(['country' => $country])
-            ->visit('/')
-            ->see("Phone number for a country $name")
-            ->see("Unfortunatelly we don't have any numbers in $name yet.")
-            ->see("Buy number")
-        ;
-    }
-
-    /**
-     * List of countries for tests.
-     *
-     * @param array
-     */
-    public function countryProvider()
-    {
-        return [
-            ['name' => 'Russia', 'iso' => 'RU'],
-            ['name' => 'Denmark', 'iso' => 'DK'],
-            ['name' => 'United States', 'iso' => 'US'],
-        ];
+            ->get('/api/countries/current')
+            ->seeJsonEquals($country);
     }
 }
