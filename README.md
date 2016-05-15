@@ -7,9 +7,8 @@ Installation
 3. php artisan key:generate
 4. Add twilio settings to .env (or app/twilio.php)
 5. php artisan migrate
-6. bower install
-7. npm install
-8. gulp
+6. npm install
+7. gulp
 
 
 Testing
