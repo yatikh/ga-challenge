@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Api\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Session;
@@ -20,7 +21,11 @@ class PhonenumbersController extends Controller
             'country_iso' => $countryCode
         ])->first();
 
-        return response()->json(['phonenumber' => $phonenumber->number]);
+        if (!$phonenumber) {
+            return response()->json(['errors' => ['Phonenumber not found.']], 404);
+        }
+
+        return response()->json(['number' => $phonenumber->number]);
     }
 
     /**
@@ -51,7 +56,7 @@ class PhonenumbersController extends Controller
             $items[] = $number->phone_number;
         }
 
-        return response()->json(['items' => $items]);
+        return response()->json($items);
     }
 
     /**

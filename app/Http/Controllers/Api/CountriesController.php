@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Api\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Session;
@@ -19,7 +20,7 @@ class CountriesController extends Controller
             return response()->json(['errors' => ['No stored country.']], 404);
         }
 
-        return response()->json(['country' => Session::get('country')]);
+        return response()->json(Session::get('country'));
     }
 
     /**
@@ -47,7 +48,7 @@ class CountriesController extends Controller
         $chunkSize = ceil(count($result) / 4);
         $splitedCountries = array_chunk($result, $chunkSize);
 
-        return response()->json(['items' => $splitedCountries]);
+        return response()->json($splitedCountries);
     }
 
     /**
@@ -57,8 +58,8 @@ class CountriesController extends Controller
     {
         // validate request
         $validator = Validator::make($request->all(), [
-            'country_iso' => 'required',
-            'country_name' => 'required'
+            'iso' => 'required',
+            'name' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -68,10 +69,10 @@ class CountriesController extends Controller
         $key = 'country';
 
         Session::put($key, [
-            'name' => $request->get('country_name'),
-            'iso' => $request->get('country_iso')
+            'name' => $request->get('name'),
+            'iso' => $request->get('iso')
         ]);
 
-        return reponse()->json(['key' => $key], 201);
+        return response()->json(['key' => $key], 201);
     }
 }
